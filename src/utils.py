@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import dill 
 from src.exception import CustomException
+from sklearn.metrics import r2_score
 def save_object(file_path,obj):
     try:
         dir_path=os.path.dirname(file_path)
@@ -12,3 +13,22 @@ def save_object(file_path,obj):
             dill.dump(obj,file_obj)
     except Exception as e:
         raise CustomException(e,sys)
+
+
+def evaluate_model(xtrain,ytrain,xtest,ytest,models):
+    try:
+        report={}
+        for i in range(len(list(models))):
+            model=list(models.values())[i]
+            model.fit(xtrain,ytrain)
+            ypred_train=model.predict(xtrain)
+            ypred_test=model.predict(xtest)
+            train_score=r2_score(ytrain,ypred_train)
+            test_score=r2_score(ytest,ypred_test)
+            report[list(models.keys())[i]]=test_score
+            return report
+    except Exception as e:
+        raise CustomException(e,sys)
+    
+
+
